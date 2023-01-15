@@ -23,5 +23,3 @@ function btnListen() {
     })
     
 }
-
-btnListen()
