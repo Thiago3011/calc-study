@@ -1,13 +1,20 @@
 const btnsNumbers = document.querySelectorAll('.btns')
 const btnsOperators = document.querySelectorAll('.operators')
 const screen = document.querySelector('.screen')
+const miniScreen = document.querySelector('.mini-screen')
 
-let num, num2, operacao
+let num1, num2, operacao
+let limparScreenAposCalculo = true
 
 function btnListen() {
 
     btnsNumbers.forEach(btn => {
         btn.addEventListener('click', () => {
+            if (limparScreenAposCalculo) {
+                screen.value = ''
+            }
+
+            limparScreenAposCalculo = false
             screen.value += btn.textContent
         })
     })
@@ -22,13 +29,45 @@ function btnListen() {
                     apagarUmCaractere()
                     break
                 case "+":
-                    screen.value += "+"
-                    operacao = "+"
-                    num = tirarSinalOperacao(screen.value)
+                    num1 = Number(screen.value)
+                    operacao = '+'
+
+                    miniScreen.value = num1 + ' +'
+                    screen.value = ''
                     break
+                case "-":
+                    num1 = Number(screen.value)
+                    operacao = '-'
+                    miniScreen.value = num1 + ' -'
+                    screen.value = ''
+                    break
+                case "/":
+                    num1 = Number(screen.value)
+                    operacao = '/'
+                    miniScreen.value = num1 + ' /'
+                    screen.value = ''
+                    break
+                case "X":
+                    num1 = Number(screen.value)
+                    operacao = 'X'
+                    miniScreen.value = num1 + ' X'
+                    screen.value = ''
+                    break
+                case "%":
+                    if (num1 == null) break
+                    num2 = Number(screen.value)
+                    operacao = '%'
+                    calcular()
+                    break
+                    case "T":
+                        if (screen.value == '') break
+                        const numComSinalInvertido = Number(screen.value) * -1
+                        screen.value = numComSinalInvertido
+                        break
                 case "=":
-                    formatarNumeros(screen.value)
-                    checarOperacao(operacao)
+                    num2 = Number(screen.value)
+                    miniScreen.value = ''
+                    calcular()
                     break
                 default:
                     screen.value += btn.value
@@ -39,34 +78,53 @@ function btnListen() {
 
 }
 
-function checarOperacao(operacao) {
-    if (operacao == "+") {
-        somar(num, num2)
+function calcular() {
+    if (operacao == '+') {
+        const resultado = num1 + num2
+        limparScreenAposCalculo = true
+
+        return screen.value = resultado
+
+    } else if (operacao == '-') {
+        const resultado = num1 - num2
+        limparScreenAposCalculo = true
+
+        return screen.value = resultado
+
+    } else if (operacao == '/') {
+        if (num2 === 0) {
+            alert('Impossível dividir por 0')
+            screen.value = ''
+            miniScreen.value = ''
+        } else {
+            const resultado = num1 / num2
+            limparScreenAposCalculo = true
+
+            return screen.value = resultado
+        }
+
+    } else if (operacao == 'X') {
+        const resultado = num1 * num2
+        limparScreenAposCalculo = true
+
+        return screen.value = resultado
+    } else if (operacao == '%') {
+        const resultado = num2 / num1
+        limparScreenAposCalculo = true
+
+        return screen.value = resultado
     }
-}
-
-function tirarSinalOperacao(screenValue) {
-    return screenValue.substring(0, screenValue.length - 1)
-}
-
-function formatarNumeros(numNaoFormatado) {
-    num2 = numNaoFormatado.substring(num.length + 1)
-}
-
-function somar(num, num2) {
-    const sum = Number(num)
-    const sum2 = Number(num2)
-
-    screen.value = sum + sum2
 }
 
 function apagarTudo() {
     screen.value = ''
+    miniScreen.value = ''
 }
 
 function apagarUmCaractere() {
     const textoNovo = screen.value.substring(1)
-    screen.value = textoNovo
+
+    return screen.value = textoNovo
 }
 
 btnListen()
