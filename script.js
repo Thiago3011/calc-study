@@ -3,19 +3,23 @@ const btnsOperators = document.querySelectorAll('.operators')
 const screen = document.querySelector('.screen')
 const miniScreen = document.querySelector('.mini-screen')
 
-let num1, num2, operacao
+let num1, num2, operacao, valorSemPonto
 let limparScreenAposCalculo = true
 
 function btnListen() {
 
     btnsNumbers.forEach(btn => {
         btn.addEventListener('click', () => {
-            if (limparScreenAposCalculo) {
-                screen.value = ''
-            }
 
-            limparScreenAposCalculo = false
+            if (limparScreenAposCalculo) screen.value = ''
+
             screen.value += btn.textContent
+            
+
+                formatarNumeros(screen.value)
+                limparScreenAposCalculo = false
+        
+
         })
     })
 
@@ -29,41 +33,48 @@ function btnListen() {
                     apagarUmCaractere()
                     break
                 case "+":
-                    num1 = Number(screen.value)
+                    miniScreen.value = screen.value + ' +'
+                    valorSemPonto = tirarPonto(screen.value)
+                    num1 = Number(valorSemPonto)
                     operacao = '+'
 
-                    miniScreen.value = num1 + ' +'
                     screen.value = ''
                     break
                 case "-":
-                    num1 = Number(screen.value)
+                    miniScreen.value = screen.value + ' -'
+                    valorSemPonto = tirarPonto(screen.value)
+                    num1 = Number(valorSemPonto)
                     operacao = '-'
-                    miniScreen.value = num1 + ' -'
                     screen.value = ''
                     break
                 case "/":
-                    num1 = Number(screen.value)
+                    miniScreen.value = screen.value + ' /'
+                    valorSemPonto = tirarPonto(screen.value)
+                    num1 = Number(valorSemPonto)
                     operacao = '/'
-                    miniScreen.value = num1 + ' /'
                     screen.value = ''
                     break
                 case "X":
-                    num1 = Number(screen.value)
+                    miniScreen.value = screen.value + ' X'
+                    valorSemPonto = tirarPonto(screen.value)
+                    num1 = Number(valorSemPonto)
                     operacao = 'X'
-                    miniScreen.value = num1 + ' X'
                     screen.value = ''
                     break
                 case "%":
-                    if (num1 == null) break
-                    num2 = Number(screen.value)
+                    valorSemPonto = tirarPonto(screen.value)
+                    if (screen.value == '') break
+                    num2 = Number(valorSemPonto)
                     operacao = '%'
+                    miniScreen.value = ''
                     calcular()
                     break
-                    case "T":
-                        if (screen.value == '') break
-                        const numComSinalInvertido = Number(screen.value) * -1
-                        screen.value = numComSinalInvertido
-                        break
+
+                case "+/-":
+                    if (screen.value == '') break
+                    const numComSinalInvertido = Number(screen.value) * -1
+                    screen.value = numComSinalInvertido
+                    break
                 case "=":
                     num2 = Number(screen.value)
                     miniScreen.value = ''
@@ -80,13 +91,13 @@ function btnListen() {
 
 function calcular() {
     if (operacao == '+') {
-        const resultado = num1 + num2
+        const resultado = formatarNumeros(String(num1 + num2))
         limparScreenAposCalculo = true
 
         return screen.value = resultado
 
     } else if (operacao == '-') {
-        const resultado = num1 - num2
+        const resultado = formatarNumeros(String(num1 - num2))
         limparScreenAposCalculo = true
 
         return screen.value = resultado
@@ -97,19 +108,20 @@ function calcular() {
             screen.value = ''
             miniScreen.value = ''
         } else {
-            const resultado = num1 / num2
+            const resultado = formatarNumeros(String(num1 / num2))
             limparScreenAposCalculo = true
 
             return screen.value = resultado
         }
 
     } else if (operacao == 'X') {
-        const resultado = num1 * num2
+        const resultado = formatarNumeros(String(num1 * num2))
         limparScreenAposCalculo = true
 
         return screen.value = resultado
+
     } else if (operacao == '%') {
-        const resultado = num2 / num1
+        const resultado = formatarNumeros(String(num1 / num2))
         limparScreenAposCalculo = true
 
         return screen.value = resultado
@@ -125,6 +137,23 @@ function apagarUmCaractere() {
     const textoNovo = screen.value.substring(1)
 
     return screen.value = textoNovo
+}
+
+function formatarNumeros(valorTela) {
+
+    let valorSemPonto = tirarPonto(valorTela)
+
+    let valorFormatado = Number(valorSemPonto).toLocaleString('pt-BR')
+
+    return screen.value = valorFormatado
+}
+
+function tirarPonto(valor) {
+    if (valor.includes('.')) {
+        return valor.replace(/\./g, '')
+    } else {
+        return valor
+    }
 }
 
 btnListen()
